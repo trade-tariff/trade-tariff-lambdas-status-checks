@@ -1,0 +1,63 @@
+frameworkVersion: '3'
+service: status-checks
+
+plugins:
+  - serverless-vpc-discovery
+
+custom:
+  vpcDiscovery:
+    vpcName: "trade-tariff-${env:STAGE}-vpc"
+    subnetNames:
+      - trade-tariff-${env:STAGE}-vpc-private
+    securityGroupNames:
+      - trade-tariff-ecs-security-group-${env:STAGE}
+
+provider:
+  name: aws
+  region: eu-west-2
+  vpc:
+    securityGroupIds:
+      - ${custom.vpcDiscovery.securityGroupNames}
+    subnetIds:
+      - ${custom.vpcDiscovery.subnetNames}
+  environment:
+    API_KEY: ${env:STATUS_CHECKS_API_KEY}
+  runtime: go1.x
+  stage: ${env:STAGE}
+  deploymentBucket:
+    name: ${env:DEPLOYMENT_BUCKET}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - s3:ListBucket
+        - s3:GetObject
+        - s3:PutObject
+      Resource:
+        - "arn:aws:s3:::${env:STATUS_CHECKS_BUCKET}"
+        - "arn:aws:s3:::${env:STATUS_CHECKS_BUCKET}/*"
+
+    - Effect: "Allow"
+      Action:
+        - kms:GenerateDataKey
+        - kms:Decrypt
+      Resource:
+        - "arn:aws:kms:${self:provider.region}:${aws:accountId}:key/*"
+
+    - Effect: "Allow"
+      Action:
+        - ec2:CreateNetworkInterface
+        - ec2:DescribeNetworkInterfaces
+        - ec2:DeleteNetworkInterface
+      Resource: "*"
+
+
+package:
+  patterns:
+    - '!./**'
+    - ./bin/**
+
+functions:
+  status:
+    handler: bin/status-checks
+    events:
+     - schedule: rate(5 minutes)

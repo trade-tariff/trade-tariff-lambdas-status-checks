@@ -1,0 +1,106 @@
+version: 2.1
+
+filter-not-main: &filter-not-main
+  filters:
+    branches:
+      ignore:
+        - main
+
+filter-main: &filter-main
+  filters:
+    branches:
+      only:
+        - main
+
+orbs:
+  serverless-framework: circleci/serverless-framework@2.0.1
+  slack: circleci/slack@4.3.0
+
+jobs:
+  lint:
+    docker:
+      - image: cimg/go:1.22.2
+    steps:
+      - checkout
+      - run: make lint-install && make lint
+
+  build:
+    parameters:
+      stage:
+        type: string
+    docker:
+      - image: cimg/go:1.22.2
+    steps:
+      - checkout
+      - run: make build-<< parameters.stage  >>
+      - persist_to_workspace:
+          root: .
+          paths:
+            - bin/handler
+
+  deploy:
+    parameters:
+      stage:
+        type: string
+    docker:
+      - image: cimg/node:21.7.3
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - serverless-framework/setup
+      - run: npm install serverless-vpc-discovery
+      - run: make deploy-<< parameters.stage  >>
+
+workflows:
+  version: 2
+
+  deploy-to-development:
+    jobs:
+      - lint:
+          <<: *filter-not-main
+
+      - build:
+          name: build-development
+          stage: development
+          requires:
+            - lint
+          <<: *filter-not-main
+
+      - deploy:
+          name: deploy-development
+          stage: development
+          context: trade-tariff-lambda-deployments-development
+          requires:
+            - build-development
+          <<: *filter-not-main
+
+  deploy-to-staging:
+    jobs:
+      - build:
+          name: build-staging
+          stage: staging
+          <<: *filter-main
+
+      - deploy:
+          name: deploy-staging
+          stage: staging
+          context: trade-tariff-lambda-deployments-staging
+          requires:
+            - build-staging
+          <<: *filter-main
+
+  deploy-to-production:
+    jobs:
+      - build:
+          name: build-production
+          stage: production
+          <<: *filter-main
+
+      - deploy:
+          name: deploy-production
+          stage: production
+          context: trade-tariff-lambda-deployments-production
+          requires:
+            - build-production
+          <<: *filter-main
