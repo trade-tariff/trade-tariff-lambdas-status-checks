@@ -22,11 +22,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-// var defaultConfig = map[string]string{
-// 	"STATUS_BUCKET": "trade-tariff-status-checks-844815912454",
-// 	"DEBUG":         "false",
-// }
-
 type Result struct {
 	Duration   time.Duration
 	StatusCode int
@@ -132,6 +127,8 @@ func execute(ctx context.Context, event CloudWatchEvent) {
 			"Error occurred while writing to S3",
 			logger.String("error", err.Error()),
 		)
+	} else {
+		logger.Log.Info("Successfully written to S3")
 	}
 }
 

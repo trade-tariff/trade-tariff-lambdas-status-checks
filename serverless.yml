@@ -4,9 +4,10 @@ service: status-checks
 provider:
   name: aws
   region: eu-west-2
-  timeout: 20
+  timeout: 29
   environment:
     API_KEY: ${env:STATUS_CHECKS_API_KEY}
+    STATUS_BUCKET: ${env:STATUS_CHECKS_BUCKET}
   runtime: provided.al2023
   stage: ${env:STAGE}
   deploymentBucket:
