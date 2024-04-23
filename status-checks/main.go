@@ -17,6 +17,9 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 // var defaultConfig = map[string]string{
@@ -88,6 +91,8 @@ func main() {
 }
 
 func execute(ctx context.Context, event CloudWatchEvent) {
+	sess := initializeAWSSession()
+	s3Client := s3.New(sess)
 	logger.Log.Info(fmt.Sprintf("Starting status checks from %s", event.DetailType))
 	applications := initializeApplications()
 
@@ -119,6 +124,15 @@ func execute(ctx context.Context, event CloudWatchEvent) {
 	}
 
 	logger.Log.Info(string(jsonData))
+
+	err = writeToS3(s3Client, string(jsonData))
+
+	if err != nil {
+		logger.Log.Fatal(
+			"Error occurred while writing to S3",
+			logger.String("error", err.Error()),
+		)
+	}
 }
 
 func collectResults(ctx context.Context, numWorkers int, config AppConfig) AppResponseTimes {
@@ -255,6 +269,14 @@ func initializeApplications() []AppConfig {
 	return config.Applications
 }
 
+func initializeAWSSession() *session.Session {
+	sess, err := session.NewSession(&aws.Config{})
+	if err != nil {
+		logger.Log.Fatal("Error occurred while creating AWS session. Have you configured your AWS credentials?")
+	}
+	return sess
+}
+
 func setAuthHeader(req *http.Request, config AppConfig) {
 	var authHeader string
 	var authHeaderValue string
@@ -316,4 +338,21 @@ func computeStatus(config AppConfig, p90 float64, errorCount int) Status {
 	}
 
 	return ACTIVE
+}
+
+func writeToS3(s3Client *s3.S3, data string) error {
+	bucket := os.Getenv("STATUS_BUCKET")
+
+	if bucket == "" {
+		logger.Log.Fatal(
+			"STATUS_BUCKET environment variable not set",
+		)
+	}
+	_, err := s3Client.PutObject(&s3.PutObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String("status.json"),
+		Body:   strings.NewReader(data),
+	})
+
+	return err
 }
