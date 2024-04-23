@@ -10,7 +10,7 @@ build-production:
 	STAGE=production make build
 
 build: clean configure
-	cd status-checks && env GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build -ldflags="-s -w" -o ../bin/handler
+	cd status-checks && env GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build -ldflags="-s -w" -o ../bootstrap
 
 configure:
 	cp config/applications.${STAGE}.toml ./status-checks/applications.toml

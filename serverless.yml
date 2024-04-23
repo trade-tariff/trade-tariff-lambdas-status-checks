@@ -6,7 +6,7 @@ provider:
   region: eu-west-2
   environment:
     API_KEY: ${env:STATUS_CHECKS_API_KEY}
-  runtime: go1.x
+  runtime: provided.al2023
   stage: ${env:STAGE}
   deploymentBucket:
     name: ${env:DEPLOYMENT_BUCKET}
@@ -38,10 +38,10 @@ provider:
 package:
   patterns:
     - '!./**'
-    - ./bin/**
+    - bootstrap
 
 functions:
   status:
-    handler: bin/status-checks
+    handler: bootstrap
     events:
      - schedule: rate(5 minutes)
