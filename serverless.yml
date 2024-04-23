@@ -4,6 +4,7 @@ service: status-checks
 provider:
   name: aws
   region: eu-west-2
+  timeout: 20
   environment:
     API_KEY: ${env:STATUS_CHECKS_API_KEY}
   runtime: provided.al2023
