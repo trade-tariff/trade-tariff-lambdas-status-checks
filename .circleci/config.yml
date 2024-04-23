@@ -49,7 +49,7 @@ jobs:
       - attach_workspace:
           at: .
       - serverless-framework/setup
-      - run: npm install serverless-vpc-discovery
+      # - run: npm install serverless-vpc-discovery # TODO: Add VPC configuration to access various private backends
       - run: make deploy-<< parameters.stage  >>
 
 workflows:

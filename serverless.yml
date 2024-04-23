@@ -1,25 +1,9 @@
 frameworkVersion: '3'
 service: status-checks
 
-plugins:
-  - serverless-vpc-discovery
-
-custom:
-  vpcDiscovery:
-    vpcName: "trade-tariff-${env:STAGE}-vpc"
-    subnetNames:
-      - trade-tariff-${env:STAGE}-vpc-private
-    securityGroupNames:
-      - trade-tariff-ecs-security-group-${env:STAGE}
-
 provider:
   name: aws
   region: eu-west-2
-  vpc:
-    securityGroupIds:
-      - ${custom.vpcDiscovery.securityGroupNames}
-    subnetIds:
-      - ${custom.vpcDiscovery.subnetNames}
   environment:
     API_KEY: ${env:STATUS_CHECKS_API_KEY}
   runtime: go1.x
