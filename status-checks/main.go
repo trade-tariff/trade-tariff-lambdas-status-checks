@@ -65,9 +65,9 @@ type AppConfig struct {
 	AuthHeader                     string  `toml:"authHeader"`
 	Verb                           string  `toml:"verb"`
 	Data                           string  `toml:"data"`
-	ErrorHighWatermarkPercentage   int     `toml:"errorHighWatermarkPercentage"`
-	ErrorMediumWatermarkPercentage int     `toml:"errorMediumWatermarkPercentage"`
-	ErrorLowWatermarkPercentage    int     `toml:"errorLowWatermarkPercentage"`
+	ErrorHighWatermarkPercentage   float64 `toml:"errorHighWatermarkPercentage"`
+	ErrorMediumWatermarkPercentage float64 `toml:"errorMediumWatermarkPercentage"`
+	ErrorLowWatermarkPercentage    float64 `toml:"errorLowWatermarkPercentage"`
 	P90HighWatermarkSeconds        float64 `toml:"p90HighWatermarkSeconds"`
 	P90MediumWatermarkSeconds      float64 `toml:"p90MediumWatermarkSeconds"`
 	P90LowWatermarkSeconds         float64 `toml:"p90LowWatermarkSeconds"`
@@ -152,6 +152,7 @@ func collectResults(ctx context.Context, numWorkers int, config AppConfig) AppRe
 
 	var errorCount int
 	var successCount int
+	var errorPercentage float64
 	var allTimes []time.Duration
 
 	for r := range results {
@@ -162,9 +163,10 @@ func collectResults(ctx context.Context, numWorkers int, config AppConfig) AppRe
 		}
 		allTimes = append(allTimes, r.Duration)
 	}
+	errorPercentage = float64(errorCount) / float64(successCount+errorCount) * 100
 
 	p90 := computeP90(allTimes)
-	status := computeStatus(config, p90, errorCount)
+	status := computeStatus(config, p90, errorPercentage)
 
 	return AppResponseTimes{
 		TotalRequests: len(allTimes),
@@ -309,16 +311,16 @@ func computeP90(allTimes []time.Duration) float64 {
 	return p90
 }
 
-func computeStatus(config AppConfig, p90 float64, errorCount int) Status {
-	if errorCount > config.ErrorHighWatermarkPercentage {
+func computeStatus(config AppConfig, p90 float64, errorPercentage float64) Status {
+	if errorPercentage > config.ErrorHighWatermarkPercentage {
 		return INACTIVE
 	}
 
-	if errorCount > config.ErrorMediumWatermarkPercentage {
+	if errorPercentage > config.ErrorMediumWatermarkPercentage {
 		return DEGRADED
 	}
 
-	if errorCount > config.ErrorLowWatermarkPercentage {
+	if errorPercentage > config.ErrorLowWatermarkPercentage {
 		return ACTIVE
 	}
 
