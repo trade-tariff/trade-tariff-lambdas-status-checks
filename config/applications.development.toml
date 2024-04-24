@@ -5,7 +5,7 @@ errorHighWatermarkPercentage = 50.0
 errorMediumWatermarkPercentage = 20.0
 errorLowWatermarkPercentage = 1.0
 p90HighWatermarkSeconds = 10.0
-p90MediumWatermarkSeconds = 3.0
+p90MediumWatermarkSeconds = 6.0
 p90LowWatermarkSeconds = 1.0
 
 [[application]]

@@ -17,3 +17,64 @@ sequenceDiagram
     CF->>U: User accesses status page
     U->>U: Sees status of each application
 ```
+
+Individual application checks are configured per environment using a configuration type struct
+that is loaded from one of:
+
+- config/applications.development.toml
+- config/applications.staging.toml
+- config/applications.production.toml
+
+An example configured application for `config/applications.development.toml`
+
+```toml
+[[application]]
+name = "Trade Tariff FPO Search"
+url = "https://search.dev.trade-tariff.service.gov.uk/fpo-code-search"
+authHeader = "X-Api-Key"
+authHeaderValue = "env:API_KEY"
+verb = "POST"
+data = '{"description":"cheesecake"}'
+errorHighWatermarkPercentage = 50.0
+errorMediumWatermarkPercentage = 20.0
+errorLowWatermarkPercentage = 1.0
+p90HighWatermarkSeconds = 10.0
+p90MediumWatermarkSeconds = 3.0
+p90LowWatermarkSeconds = 1.0
+```
+
+These are used to determine the ACTIVE/DEGRADED/INACTIVE status of a given application
+
+```go
+type AppConfig struct {
+ Name                           string  `toml:"name"`
+ URL                            string  `toml:"url"`
+ AuthHeaderValue                string  `toml:"authHeaderValue"`
+ AuthHeader                     string  `toml:"authHeader"`
+ Verb                           string  `toml:"verb"`
+ Data                           string  `toml:"data"`
+ ErrorHighWatermarkPercentage   float64 `toml:"errorHighWatermarkPercentage"`
+ ErrorMediumWatermarkPercentage float64 `toml:"errorMediumWatermarkPercentage"`
+ ErrorLowWatermarkPercentage    float64 `toml:"errorLowWatermarkPercentage"`
+ P90HighWatermarkSeconds        float64 `toml:"p90HighWatermarkSeconds"`
+ P90MediumWatermarkSeconds      float64 `toml:"p90MediumWatermarkSeconds"`
+ P90LowWatermarkSeconds         float64 `toml:"p90LowWatermarkSeconds"`
+}
+```
+
+The meaning of these configuration items is as follows:
+
+| Field Name                         | Description |
+|------------------------------------|-------------|
+| `Name`                             | The name of the application configuration (seen in the status page). |
+| `URL`                              | The URL associated with the application, used for network requests. |
+| `AuthHeaderValue` (optional)       | The value to be used for the authorization header in network requests. (e.g. `env:API_KEY`). These are injected at deploy time  |
+| `AuthHeader` (optional)            | The key/name of the authorization header to use in network requests (e.g. X-Api-Key or Authorization). |
+| `Verb` (defaults to "GET")         | The HTTP method (verb) to be used in network requests, such as `GET`, `POST`, etc. |
+| `Data` (optional)                  | The data to be sent in the body of network requests, if applicable. |
+| `ErrorHighWatermarkPercentage`     | The high watermark percentage for error rates beyond which an application is considered to be in a `INACTIVE` state. |
+| `ErrorMediumWatermarkPercentage`   | The medium watermark percentage for error rates that indicate a `DEGRADED` but acceptable state. |
+| `ErrorLowWatermarkPercentage`      | The low watermark percentage for error rates considered `ACTIVE` under normal operation. |
+| `P90HighWatermarkSeconds`          | The high watermark for 90th percentile response times, above which performance is considered `INACTIVE`. |
+| `P90MediumWatermarkSeconds`        | The medium watermark for 90th percentile response times, indicating caution but not necessarily `DEGRADED` state. |
+| `P90LowWatermarkSeconds`           | The low watermark for 90th percentile response times, considered `ACTIVE` under normal conditions. |
