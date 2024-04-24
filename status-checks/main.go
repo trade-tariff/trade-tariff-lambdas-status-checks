@@ -113,6 +113,10 @@ func execute(ctx context.Context, event CloudWatchEvent) {
 
 	wg.Wait()
 
+	sort.Slice(allResponseTimes.Applications, func(i, j int) bool {
+		return allResponseTimes.Applications[i].Application < allResponseTimes.Applications[j].Application
+	})
+
 	jsonData, err := json.Marshal(allResponseTimes)
 
 	if err != nil {
