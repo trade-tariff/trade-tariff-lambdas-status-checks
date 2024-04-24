@@ -1,0 +1,49 @@
+frameworkVersion: '3'
+service: status-checks
+
+provider:
+  name: aws
+  region: eu-west-2
+  timeout: 29
+  environment:
+    API_KEY: ${env:STATUS_CHECKS_API_KEY}
+    STATUS_BUCKET: ${env:STATUS_CHECKS_BUCKET}
+  runtime: provided.al2023
+  stage: ${env:STAGE}
+  deploymentBucket:
+    name: ${env:DEPLOYMENT_BUCKET}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - s3:ListBucket
+        - s3:GetObject
+        - s3:PutObject
+      Resource:
+        - "arn:aws:s3:::${env:STATUS_CHECKS_BUCKET}"
+        - "arn:aws:s3:::${env:STATUS_CHECKS_BUCKET}/*"
+
+    - Effect: "Allow"
+      Action:
+        - kms:GenerateDataKey
+        - kms:Decrypt
+      Resource:
+        - "arn:aws:kms:${self:provider.region}:${aws:accountId}:key/*"
+
+    - Effect: "Allow"
+      Action:
+        - ec2:CreateNetworkInterface
+        - ec2:DescribeNetworkInterfaces
+        - ec2:DeleteNetworkInterface
+      Resource: "*"
+
+
+package:
+  patterns:
+    - '!./**'
+    - bootstrap
+
+functions:
+  status:
+    handler: bootstrap
+    events:
+     - schedule: rate(5 minutes)
