@@ -86,9 +86,10 @@ func main() {
 }
 
 func execute(ctx context.Context, event CloudWatchEvent) {
+	logger.Log.Info(fmt.Sprintf("Starting status checks from %s", event.DetailType))
+
 	sess := initializeAWSSession()
 	s3Client := s3.New(sess)
-	logger.Log.Info(fmt.Sprintf("Starting status checks from %s", event.DetailType))
 	applications := initializeApplications()
 
 	var wg sync.WaitGroup

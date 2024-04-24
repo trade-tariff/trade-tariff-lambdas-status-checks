@@ -51,3 +51,23 @@ errorLowWatermarkPercentage = 1.0
 p90HighWatermarkSeconds = 10.0
 p90MediumWatermarkSeconds = 3.0
 p90LowWatermarkSeconds = 1.0
+
+[[application]]
+name = "Trade Tariff Developer Hub Frontend"
+url = "https://hub.staging.trade-tariff.service.gov.uk/healthcheck"
+errorHighWatermarkPercentage = 50.0
+errorMediumWatermarkPercentage = 20.0
+errorLowWatermarkPercentage = 1.0
+p90HighWatermarkSeconds = 10.0
+p90MediumWatermarkSeconds = 3.0
+p90LowWatermarkSeconds = 1.0
+
+[[application]]
+name = "Trade Tariff Developer Hub Backend"
+url = "https://hub.staging.trade-tariff.service.gov.uk/api/healthcheck"
+errorHighWatermarkPercentage = 50.0
+errorMediumWatermarkPercentage = 20.0
+errorLowWatermarkPercentage = 1.0
+p90HighWatermarkSeconds = 10.0
+p90MediumWatermarkSeconds = 3.0
+p90LowWatermarkSeconds = 1.0
