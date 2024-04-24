@@ -313,6 +313,11 @@ func computeP90(allTimes []time.Duration) float64 {
 }
 
 func computeStatus(config AppConfig, p90 float64, errorPercentage float64) Status {
+	// Handle the case where there are no responses because the service exceeds the context timeout
+	if p90 == 0.0 {
+		return INACTIVE
+	}
+
 	if errorPercentage > config.ErrorHighWatermarkPercentage {
 		return INACTIVE
 	}

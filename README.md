@@ -11,7 +11,7 @@ sequenceDiagram
     participant U as User
 
     C->>+L: Triggers every 5 minutes
-    L->>+L: Iterates through P90 synthetics
+    L->>+L: Iterates through applications and check status
     L->>+S3: Drops status.json update file
     S3->>-CF: Serves index.html via Cloudfront
     CF->>U: User accesses status page
@@ -41,25 +41,6 @@ errorLowWatermarkPercentage = 1.0
 p90HighWatermarkSeconds = 10.0
 p90MediumWatermarkSeconds = 3.0
 p90LowWatermarkSeconds = 1.0
-```
-
-These are used to determine the ACTIVE/DEGRADED/INACTIVE status of a given application
-
-```go
-type AppConfig struct {
- Name                           string  `toml:"name"`
- URL                            string  `toml:"url"`
- AuthHeaderValue                string  `toml:"authHeaderValue"`
- AuthHeader                     string  `toml:"authHeader"`
- Verb                           string  `toml:"verb"`
- Data                           string  `toml:"data"`
- ErrorHighWatermarkPercentage   float64 `toml:"errorHighWatermarkPercentage"`
- ErrorMediumWatermarkPercentage float64 `toml:"errorMediumWatermarkPercentage"`
- ErrorLowWatermarkPercentage    float64 `toml:"errorLowWatermarkPercentage"`
- P90HighWatermarkSeconds        float64 `toml:"p90HighWatermarkSeconds"`
- P90MediumWatermarkSeconds      float64 `toml:"p90MediumWatermarkSeconds"`
- P90LowWatermarkSeconds         float64 `toml:"p90LowWatermarkSeconds"`
-}
 ```
 
 The meaning of these configuration items is as follows:
