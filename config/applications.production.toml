@@ -59,7 +59,7 @@ concurrency = 5
 
 [[application]]
 name = "Trade Tariff Developer Hub Frontend"
-url = "https://hub.production.trade-tariff.service.gov.uk/healthcheck"
+url = "https://hub.trade-tariff.service.gov.uk/healthcheck"
 errorHighWatermarkPercentage = 50.0
 errorMediumWatermarkPercentage = 20.0
 errorLowWatermarkPercentage = 1.0
@@ -70,7 +70,7 @@ concurrency = 5
 
 [[application]]
 name = "Trade Tariff Developer Hub Backend"
-url = "https://hub.production.trade-tariff.service.gov.uk/api/healthcheck"
+url = "https://hub.trade-tariff.service.gov.uk/api/healthcheck"
 errorHighWatermarkPercentage = 50.0
 errorMediumWatermarkPercentage = 20.0
 errorLowWatermarkPercentage = 1.0
