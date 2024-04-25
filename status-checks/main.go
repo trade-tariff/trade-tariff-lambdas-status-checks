@@ -71,6 +71,7 @@ type AppConfig struct {
 	P90HighWatermarkSeconds        float64 `toml:"p90HighWatermarkSeconds"`
 	P90MediumWatermarkSeconds      float64 `toml:"p90MediumWatermarkSeconds"`
 	P90LowWatermarkSeconds         float64 `toml:"p90LowWatermarkSeconds"`
+	Concurrency                    int     `toml:"concurrency"`
 }
 
 type CloudWatchEvent struct {
@@ -106,7 +107,7 @@ func execute(ctx context.Context, event CloudWatchEvent) {
 		wg.Add(1)
 		go func(config AppConfig) {
 			defer wg.Done()
-			results := collectResults(ctx, 5, config)
+			results := collectResults(ctx, config)
 			allResponseTimes.Applications = append(allResponseTimes.Applications, results)
 		}(config)
 	}
@@ -137,13 +138,13 @@ func execute(ctx context.Context, event CloudWatchEvent) {
 	}
 }
 
-func collectResults(ctx context.Context, numWorkers int, config AppConfig) AppResponseTimes {
+func collectResults(ctx context.Context, config AppConfig) AppResponseTimes {
 	results := make(chan Result, 100)
 
 	var wg sync.WaitGroup
 
-	wg.Add(numWorkers)
-	for i := 0; i < numWorkers; i++ {
+	wg.Add(config.Concurrency)
+	for i := 0; i < config.Concurrency; i++ {
 		go func() {
 			defer wg.Done()
 			worker(ctx, config, results)
