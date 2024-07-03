@@ -7,7 +7,7 @@ errorLowWatermarkPercentage = 1.0
 p90HighWatermarkSeconds = 10.0
 p90MediumWatermarkSeconds = 6.0
 p90LowWatermarkSeconds = 1.0
-concurrency = 2
+concurrency = 1
 
 [[application]]
 name = "Trade Tariff Backend"
@@ -18,7 +18,7 @@ errorLowWatermarkPercentage = 1.0
 p90HighWatermarkSeconds = 5.0
 p90MediumWatermarkSeconds = 2.0
 p90LowWatermarkSeconds = 1.0
-concurrency = 2
+concurrency = 1
 
 [[application]]
 name = "Trade Tariff FPO Search"
@@ -33,7 +33,7 @@ errorLowWatermarkPercentage = 1.0
 p90HighWatermarkSeconds = 10.0
 p90MediumWatermarkSeconds = 3.0
 p90LowWatermarkSeconds = 1.0
-concurrency = 2
+concurrency = 1
 
 [[application]]
 name = "Trade Tariff Duty Calculator"
@@ -44,7 +44,7 @@ errorLowWatermarkPercentage = 1.0
 p90HighWatermarkSeconds = 10.0
 p90MediumWatermarkSeconds = 3.0
 p90LowWatermarkSeconds = 1.0
-concurrency = 2
+concurrency = 1
 
 [[application]]
 name = "Trade Tariff Admin"
@@ -55,7 +55,7 @@ errorLowWatermarkPercentage = 1.0
 p90HighWatermarkSeconds = 10.0
 p90MediumWatermarkSeconds = 3.0
 p90LowWatermarkSeconds = 1.0
-concurrency = 2
+concurrency = 1
 
 [[application]]
 name = "Trade Tariff Developer Hub Frontend"
@@ -66,7 +66,7 @@ errorLowWatermarkPercentage = 1.0
 p90HighWatermarkSeconds = 10.0
 p90MediumWatermarkSeconds = 3.0
 p90LowWatermarkSeconds = 1.0
-concurrency = 2
+concurrency = 1
 
 [[application]]
 name = "Trade Tariff Developer Hub Backend"
@@ -77,4 +77,4 @@ errorLowWatermarkPercentage = 1.0
 p90HighWatermarkSeconds = 10.0
 p90MediumWatermarkSeconds = 3.0
 p90LowWatermarkSeconds = 1.0
-concurrency = 2
+concurrency = 1
