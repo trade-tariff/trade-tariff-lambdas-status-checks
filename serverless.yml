@@ -46,4 +46,4 @@ functions:
   status:
     handler: bootstrap
     events:
-     - schedule: rate(5 minutes)
+      - schedule: ${env:RATE}
