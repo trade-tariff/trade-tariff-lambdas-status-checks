@@ -200,7 +200,7 @@ func worker(ctx context.Context, config AppConfig, results chan Result) {
 			if config.Verb == "POST" {
 				response, err = post(client, config)
 			} else {
-				response, err = get(client, config)
+				response, err = head(client, config)
 			}
 
 			if err != nil {
@@ -221,9 +221,9 @@ func worker(ctx context.Context, config AppConfig, results chan Result) {
 	}
 }
 
-func get(client *http.Client, config AppConfig) (*http.Response, error) {
+func head(client *http.Client, config AppConfig) (*http.Response, error) {
 	req, err := http.NewRequest(
-		"GET",
+		"HEAD",
 		config.URL,
 		nil,
 	)
