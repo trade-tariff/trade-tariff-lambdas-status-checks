@@ -47,3 +47,4 @@ functions:
     handler: bootstrap
     events:
       - schedule: ${env:RATE}
+        enabled: false
