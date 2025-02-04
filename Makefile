@@ -16,13 +16,13 @@ configure:
 	cp config/applications.${STAGE}.toml ./status-checks/applications.toml
 
 deploy-development:
-	STAGE=development RATE="rate(1 hour)" serverless deploy --verbose
+	STAGE=development RATE="rate(2 hours)" serverless deploy --verbose
 
 deploy-staging:
-	STAGE=staging RATE="rate(1 hour)" serverless deploy --verbose
+	STAGE=staging RATE="rate(2 hours)" serverless deploy --verbose
 
 deploy-production:
-	STAGE=production RATE="rate(20 minutes)" serverless deploy --verbose
+	STAGE=production RATE="rate(2 hours)" serverless deploy --verbose
 
 test: build-development
 	cd status-checks && go test ./...
